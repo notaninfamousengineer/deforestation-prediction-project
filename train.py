@@ -54,6 +54,9 @@ optimizer = torch.optim.Adam(
 )
 
 # Training loop
+best_val_loss = float('inf')
+
+# Training loop
 for epoch in range(config["training"]["epochs"]):
     model.train()
     train_loss = 0.0
@@ -77,7 +80,12 @@ for epoch in range(config["training"]["epochs"]):
 
     val_loss /= len(test_loader)
 
-    print(f"Epoch {epoch+1}: Train={train_loss:.4f}, Val={val_loss:.4f}")
+    print(f"Epoch {epoch+1}/{config['training']['epochs']} | Train Loss: {train_loss:.6f} | Val Loss: {val_loss:.6f}")
 
-torch.save(model.state_dict(), "lstm_ndvi_model.pt")
-print("✅ Training complete")
+    # Checkpoint: Save best model
+    if val_loss < best_val_loss:
+        best_val_loss = val_loss
+        torch.save(model.state_dict(), "best_lstm_ndvi_model.pt")
+        print(f"  >>> Saved Best Model (Val Loss: {best_val_loss:.6f})")
+
+print(f"✅ Training complete. Best Validation Loss: {best_val_loss:.6f}")

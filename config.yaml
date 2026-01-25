@@ -22,16 +22,16 @@ data:
   features: ["NDVI", "NDMI", "NBR", "CI_red_edge"]
   geo_col: ".geo"
   date_col: "date"
-  window_size: 12
-  max_gap: 1        # max allowed missing months
+  window_size: 24       # Increased to 24 months (2 years) to capture Multi-Year trends
+  max_gap: 1
   test_split: 0.1
 
 training:
-  batch_size: 8
-  epochs: 60
-  learning_rate: 0.0005
+  batch_size: 16        # Increased batch size slightly for stability
+  epochs: 100           # Increased epochs as detailed features take longer to learn
+  learning_rate: 0.001
 
 model:
-  lstm_units: 32
+  lstm_units: 64        # Increased units for better capacity
   dropout: 0.2
 

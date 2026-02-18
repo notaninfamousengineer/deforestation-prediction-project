@@ -29,7 +29,7 @@ pip install -r requirements.txt
     
     ```yaml
     data:
-      base_path: "C:/Path/To/Your/Data/IMG_*.tif"  # <--- CHANGE THIS use forward slashes /
+      base_path: "C:/Path/To/Your/Data/  # <--- CHANGE THIS use forward slashes /
     ```
 
 ---
@@ -73,3 +73,4 @@ If using Google Colab:
     ```python
     !python train_v2.py
     ```
+

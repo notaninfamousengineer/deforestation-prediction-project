@@ -1,0 +1,51 @@
+# CONFIG-V2: Spatio-Temporal Forecasting (ConvLSTM)
+
+data:
+  base_path: "C:/Users/deves/VolumeD/Final Year Project/TestData/Tif_Data"
+  # GEE Export is 256x256 pixels (2560m / 10m scale).
+  # We split it into smaller patches for training (e.g. 64x64).
+  # 256 / 64 = 4 patches per side = 16 patches total per time step.
+  image_size: 64
+  raw_channels: 4                    # NDVI, NDMI, NBR, CI_red_edge
+  features: ["NDVI", "NDMI", "NBR", "CI_red_edge"]
+  temporal_encoding: true            # Adds month_sin, month_cos channels
+  
+  sequence_length: 12
+  prediction_horizon: 3
+  
+  normalize: true
+  norm_type: "minmax"
+  augment: true                      # Random flips & 90° rotations
+  cache_in_memory: true              # Pre-load all TIFs into RAM
+
+training:
+  batch_size: 8
+  epochs: 80
+  learning_rate: 0.001
+  val_split: 0.2
+  early_stopping: true
+  patience: 10
+  save_dir: "checkpoints/"
+  log_interval: 10
+  grad_clip: 1.0                     # Max gradient norm
+  scheduler:
+    type: "ReduceLROnPlateau"
+    factor: 0.5
+    patience: 5
+    min_lr: 0.00001
+
+loss:
+  type: "mse+ssim"                   # Options: "mse", "ssim", "mse+ssim"
+  ssim_weight: 0.3                   # α in: MSE + α*(1-SSIM)
+
+model:
+  # input_dim = raw_channels (4) + temporal_encoding (2) = 6
+  input_dim: 6
+  output_dim: 4                      # Predict only the 4 raw bands
+  hidden_dim: [64, 64, 64]
+  kernel_size: [3, 3]                # YAML-safe list (no eval needed)
+  num_layers: 3
+  attention: true                    # CBAM after final ConvLSTM layer
+  output_activation: "tanh"
+
+device: "auto"
